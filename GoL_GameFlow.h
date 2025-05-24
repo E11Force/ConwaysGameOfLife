@@ -4,6 +4,7 @@
 #include "GoL_Button.h"
 #include "GoL_Renderers.h"
 #include "GoL_ButtonEvents.h"
+#include "GoL_Label.h"
 
 static GoL_Button* buttons;
 static unsigned short button_count;
@@ -11,6 +12,13 @@ static unsigned short button_count;
 static GoL_Label* labels;
 static unsigned short label_count;
 
+void HandleButtons() {
+	for (int i = 0; i < button_count; i++) {
+		CheckButtonEvent(buttons[i]);
+	}
+}
+
+/*--- Menu Flow ---*/
 void GoL_LoadMenuResources(SDL_Renderer* renderer, void* app_state, const field_config& size) {
 	buttons = (GoL_Button*)SDL_calloc((size_t)3, sizeof(GoL_Button));
 	button_count = 3;
@@ -83,13 +91,57 @@ void GoL_UnloadMenuResources() {
 	SDL_free(buttons);
 }
 
-void HandleButtons() {
-	for (int i = 0; i < button_count; i++) {
-		CheckButtonEvent(buttons[i]);
-	}
-}
-
 void GoL_MenuFlow(SDL_Renderer* renderer, const field_config& size) {
 	HandleButtons();
 	GoL_RenderMenu(renderer, size, buttons, button_count, labels, label_count);
 }
+
+/*---------*/
+
+/*--- Rules Flow ---*/
+
+void GoL_LoadRulesResources(SDL_Renderer* renderer, void* app_state, const field_config& size) {
+
+}
+
+void GoL_UnloadRulesResources() {
+
+}
+
+void GoL_RulesFlow(SDL_Renderer* renderer, const field_config& size) {
+
+}
+
+/*---------*/
+
+/*--- Rules Flow ---*/
+
+void GoL_LoadPregameResources(SDL_Renderer* renderer, void* app_state, const field_config& size) {
+
+}
+
+void GoL_UnloadPregameResources() {
+
+}
+
+void GoL_PregameFlow(SDL_Renderer* renderer, const field_config& size) {
+
+}
+
+/*---------*/
+
+/*--- Rules Flow ---*/
+
+void GoL_LoadEditorResources(SDL_Renderer* renderer, void* app_state, const field_config& size) {
+
+}
+
+void GoL_UnloadEditorResources() {
+
+}
+
+void GoL_EditorFlow(SDL_Renderer* renderer, const field_config& size) {
+
+}
+
+/*---------*/

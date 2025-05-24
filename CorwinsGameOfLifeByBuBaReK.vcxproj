@@ -141,6 +141,7 @@
     <ClInclude Include="GoL_ButtonEvents.h" />
     <ClInclude Include="GoL_GameFlow.h" />
     <ClInclude Include="GoL_Global.h" />
+    <ClInclude Include="GoL_Label.h" />
     <ClInclude Include="GoL_Renderers.h" />
   </ItemGroup>
   <ItemGroup>

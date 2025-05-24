@@ -40,3 +40,8 @@ void GoL_InitButton(GoL_Button& button, SDL_Texture* caption, button_evt event, 
 	button.event = event;
 	button.event_param = evt_param;
 }
+
+void DestroyButton(GoL_Button* button) {
+	SDL_DestroyTexture(button->caption);
+	SDL_free(button);
+}

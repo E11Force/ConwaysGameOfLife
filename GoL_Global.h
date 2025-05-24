@@ -13,9 +13,3 @@ struct field_config {
 	int render_width, render_height;
 	int width, height;
 };
-
-struct GoL_Label {
-	SDL_FRect pos{ 0.f, 0.f, 0.f, 0.f};
-	float scale = 0.f;
-	SDL_Texture* label = nullptr;
-};

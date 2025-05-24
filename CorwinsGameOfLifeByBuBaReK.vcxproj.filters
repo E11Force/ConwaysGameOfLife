@@ -38,5 +38,8 @@
     <ClInclude Include="GoL_Button.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GoL_Label.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
