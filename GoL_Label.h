@@ -11,7 +11,7 @@ struct GoL_Label {
 	SDL_Texture* label = nullptr;
 };
 
-void InitLabelText(GoL_Label* label, SDL_Renderer* renderer, const char* caption, const char* font_file, float text_size, SDL_FPoint position) {
+void InitLabelText(GoL_Label* label, SDL_Renderer* renderer, const char* caption, const char* font_file, float text_size, SDL_FPoint position, bool center_position = false) {
 	TTF_Font* font = TTF_OpenFont(font_file, text_size);
 
 	SDL_Surface* caption_surface = TTF_RenderText_Blended(font, caption, strlen(caption), {255, 255, 255, SDL_ALPHA_OPAQUE});
@@ -21,8 +21,8 @@ void InitLabelText(GoL_Label* label, SDL_Renderer* renderer, const char* caption
 
 	label->label = caption_texture;
 	label->scale = 1.f;
-	label->pos.x = position.x;
-	label->pos.y = position.y;
+	label->pos.x = (center_position ? position.x - caption_texture->w / 2 : position.x);
+	label->pos.y = (center_position ? position.y - caption_texture->h / 2 : position.y);
 	label->pos.h = caption_texture->h;
 	label->pos.w = caption_texture->w;
 }

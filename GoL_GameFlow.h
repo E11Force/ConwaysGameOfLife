@@ -6,6 +6,8 @@
 #include "GoL_ButtonEvents.h"
 #include "GoL_Label.h"
 
+#define FONT_FILE "fonts\\static\\Doto-Regular.ttf"
+
 static GoL_Button* buttons;
 static unsigned short button_count;
 
@@ -25,30 +27,11 @@ void GoL_LoadMenuResources(SDL_Renderer* renderer, void* app_state, const field_
 	labels = (GoL_Label*)SDL_calloc((size_t)2, sizeof(GoL_Label));
 	label_count = 2;
 
-	TTF_Font* header_font = TTF_OpenFont("fonts\\static\\Doto-Regular.ttf", 48);
+	float headers_top = 200.f;
+	float headers_spacing = 20.f;
+	InitLabelText(labels, renderer, "Corwan's Game of Life", FONT_FILE, 60, { size.render_width / 2.f, headers_top + 30 }, true);
 
-	float headers_top = 200;
-	float headers_spacing = 20;
-	SDL_Surface* header_surface = TTF_RenderText_Blended(header_font, "Corwans Game of Life", 20, { 255, 255, 255, SDL_ALPHA_OPAQUE });
-	SDL_Texture* header_texture = SDL_CreateTextureFromSurface(renderer, header_surface);
-	SDL_DestroySurface(header_surface);
-	labels[0].label = header_texture;
-	labels[0].scale = 2.5f;
-	labels[0].pos = { size.render_width / 2 - header_texture->w * labels[0].scale / 2, 
-					  headers_top, 
-					  header_texture->w * labels[0].scale, 
-					  header_texture->h * labels[0].scale };
-
-
-	SDL_Surface* subheader_surface = TTF_RenderText_Blended(header_font, "by BuBaReK", 10, { 255, 255, 255, SDL_ALPHA_OPAQUE });
-	SDL_Texture* subheader_texture = SDL_CreateTextureFromSurface(renderer, subheader_surface);
-	SDL_DestroySurface(subheader_surface);
-	labels[1].label = subheader_texture;
-	labels[1].scale = 1.5f;
-	labels[1].pos = { size.render_width / 2 - subheader_texture->w * labels[1].scale / 2, 
-					  headers_top + header_texture->h + headers_spacing + subheader_texture->h, 
-					  subheader_texture->w * labels[1].scale, 
-				      subheader_texture->h * labels[1].scale };
+	InitLabelText(labels, renderer, "by BuBaReK", FONT_FILE, 20, { size.render_width / 2.f, headers_top + labels[0].label->h + headers_spacing + 10 }, true);
 
 	float buttons_top = headers_top + header_texture->h + headers_spacing * 2 + subheader_texture->h + 220.f;
 	float buttons_spacing = 130.f;
