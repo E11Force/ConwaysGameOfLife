@@ -141,6 +141,9 @@
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CellAutomat.h" />
+    <ClInclude Include="GameStates.h" />
+    <ClInclude Include="GlobalDefinitions.h" />
     <ClInclude Include="GoL.h" />
     <ClInclude Include="GoL_Button.h" />
     <ClInclude Include="GoL_ButtonEvents.h" />
@@ -148,6 +151,9 @@
     <ClInclude Include="GoL_Global.h" />
     <ClInclude Include="GoL_Label.h" />
     <ClInclude Include="GoL_Renderers.h" />
+    <ClInclude Include="GoL_Utils.h" />
+    <ClInclude Include="UIElements.h" />
+    <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="dependencies\SDL\VisualC\SDL\SDL.vcxproj">

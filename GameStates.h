@@ -1,24 +1,82 @@
 #pragma once
 
-#define FONT_FILE "fonts\\static\\Doto-Regular.ttf"
+//////////////////////////////
+//	COMMON STATE DEFINITIONS
+//////////////////////////////
 
+enum AppState { MENU, EDITOR, RULES, PREGAME, GAME, EXIT };
 
-void HandleButtons() {
-	for (int i = 0; i < button_count; i++) {
-		CheckButtonEvent(buttons[i]);
+static Button* buttons;
+static unsigned short button_count;
+
+static Label* labels;
+static unsigned short label_count;
+
+void CheckButtonEvent(Button& button) {
+	static SDL_FPoint mouse_pos;
+	SDL_MouseButtonFlags mouse_buttons = SDL_GetMouseState(&mouse_pos.x, &mouse_pos.y);
+
+	if (SDL_PointInRectFloat(&mouse_pos, &button.pos)) {
+		if ((mouse_buttons & SDL_BUTTON_LEFT) && !button.pushed) {
+			button.pushed = true;
+		}
+		else if (!(mouse_buttons & SDL_BUTTON_LEFT) && button.pushed) {
+			button.pushed = false;
+			(*button.event)(button.event_param);
+		}
+	}
+	else if (!(mouse_buttons & SDL_BUTTON_LEFT)) {
+		button.pushed = false;
 	}
 }
 
-/*--- Menu Flow ---*/
-void GoL_LoadMenuResources(SDL_Renderer* renderer, void* app_state, const field_config& size) {
-	buttons = (GoL_Button*)SDL_calloc((size_t)3, sizeof(GoL_Button));
+void HandleButtons(SDL_Renderer* renderer) {
+	for (int i = 0; i < button_count; i++) {
+		CheckButtonEvent(buttons[i]);
+		RenderButton(renderer, buttons[i]);
+	}
+}
+
+void HandleLabels(SDL_Renderer* renderer) {
+	for (int i = 0; i < label_count; i++) {
+		RenderLabel(renderer, labels[i]);
+	}
+}
+
+void ClearScreen(SDL_Renderer* renderer) {
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+	SDL_RenderClear(renderer);
+}
+
+//////////////////////////////
+//		MENU STATE 
+//////////////////////////////
+
+// BUTTON EVENTS
+
+void StartButtonEvt(void* app_state) {
+	*((AppState*)app_state) = AppState::PREGAME;
+}
+
+void RulesButtonEvt(void* app_state) {
+	*((AppState*)app_state) = AppState::RULES;
+}
+
+void ExitButtonEvt(void* app_state) {
+	*((AppState*)app_state) = AppState::EXIT;
+}
+
+// MANAGING RESOURCES
+
+void LoadMenuResources(SDL_Renderer* renderer, void* app_state, const field_config& size) {
+	buttons = (Button*)SDL_calloc((size_t)3, sizeof(Button));
 	button_count = 3;
-	labels = (GoL_Label*)SDL_calloc((size_t)2, sizeof(GoL_Label));
+	labels = (Label*)SDL_calloc((size_t)2, sizeof(Label));
 	label_count = 2;
 
 	float headers_top = 200.f;
 	float headers_spacing = 20.f;
-	InitLabelText(&labels[0], renderer, "Corwan's Game of Life", FONT_FILE, 60, {size.render_width / 2.f, headers_top + 30}, true);
+	InitLabelText(&labels[0], renderer, "Corwan's Game of Life", FONT_FILE, 60, { size.render_width / 2.f, headers_top + 30 }, true);
 
 	InitLabelText(&labels[1], renderer, "by BuBaReK", FONT_FILE, 20, { size.render_width / 2.f, headers_top + labels[0].label->h + headers_spacing + 10 }, true);
 	TTF_Font* header_font = TTF_OpenFont(FONT_FILE, 30);
@@ -31,28 +89,28 @@ void GoL_LoadMenuResources(SDL_Renderer* renderer, void* app_state, const field_
 									buttons_top,
 									200,
 									100 };
-	GoL_InitButton(buttons[0], startbuttoncaption_texture, &StartButtonEvt, app_state, button_dimensions);
+	InitButton(buttons[0], startbuttoncaption_texture, &StartButtonEvt, app_state, button_dimensions);
 
 	SDL_Surface* rulesbuttoncaption_surface = TTF_RenderText_Blended(header_font, "Rules", 5, { 255, 255, 255, SDL_ALPHA_OPAQUE });
 	SDL_Texture* rulesbuttoncaption_texture = SDL_CreateTextureFromSurface(renderer, rulesbuttoncaption_surface);
 	SDL_DestroySurface(rulesbuttoncaption_surface);
 	button_dimensions = { (float)size.render_width / 2 - 100,
-					      buttons_top + buttons_spacing,
+						  buttons_top + buttons_spacing,
 						  200,
 						  100 };
-	GoL_InitButton(buttons[1], rulesbuttoncaption_texture, &RulesButtonEvt, app_state, button_dimensions);
+	InitButton(buttons[1], rulesbuttoncaption_texture, &RulesButtonEvt, app_state, button_dimensions);
 
 	SDL_Surface* exitbuttoncaption_surface = TTF_RenderText_Blended(header_font, "Exit", 4, { 255, 255, 255, SDL_ALPHA_OPAQUE });
 	SDL_Texture* exitbuttoncaption_texture = SDL_CreateTextureFromSurface(renderer, exitbuttoncaption_surface);
 	SDL_DestroySurface(exitbuttoncaption_surface);
 	button_dimensions = { (float)size.render_width / 2 - 100,
-						  buttons_top + 2*buttons_spacing,
+						  buttons_top + 2 * buttons_spacing,
 						  200,
 						  100 };
-	GoL_InitButton(buttons[2], exitbuttoncaption_texture, &ExitButtonEvt, app_state, button_dimensions);
+	InitButton(buttons[2], exitbuttoncaption_texture, &ExitButtonEvt, app_state, button_dimensions);
 }
 
-void GoL_UnloadMenuResources() {
+void UnloadMenuResources() {
 	for (int i = 0; i < label_count; i++) {
 		SDL_DestroyTexture(labels[i].label);
 	}
@@ -64,8 +122,10 @@ void GoL_UnloadMenuResources() {
 }
 
 void GoL_MenuFlow(SDL_Renderer* renderer, const field_config& size) {
-	HandleButtons();
-	GoL_RenderMenu(renderer, size, buttons, button_count, labels, label_count);
+	ClearScreen(renderer);
+	SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+	HandleButtons(renderer);
+	HandleLabels(renderer);
 }
 
 /*---------*/

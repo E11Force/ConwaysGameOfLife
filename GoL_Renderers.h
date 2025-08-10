@@ -1,11 +1,5 @@
 #pragma once
 
-#include <SDL3/SDL.h>
-#include <SDL3/SDL_main.h>
-#include <SDL3_ttf/SDL_ttf.h>
-#include "GoL_Global.h"
-#include "GoL_Button.h"
-
 void GoL_ClearScreen(SDL_Renderer* renderer) {
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 	SDL_RenderClear(renderer);

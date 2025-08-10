@@ -1,7 +1,5 @@
 #pragma once
 
-#include <SDL3/SDL.h>
-
 typedef void (*button_evt)(void*);
 
 struct GoL_Button {

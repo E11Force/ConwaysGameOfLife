@@ -1,8 +1,5 @@
 #pragma once
 
-#include "GoL_Global.h"
-#include "GoL_Button.h"
-
 void CheckButtonEvent(GoL_Button& button) {
 	static SDL_FPoint mouse_pos;
 	SDL_MouseButtonFlags mouse_buttons = SDL_GetMouseState(&mouse_pos.x, &mouse_pos.y);
