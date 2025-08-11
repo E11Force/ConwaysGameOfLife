@@ -65,25 +65,20 @@ typedef void (*button_evt)(void*);
 struct Button {
 	SDL_FRect pos{ 0.f, 0.f, 0.f, 0.f };
 	SDL_FRect inner{ 0.f, 0.f, 0.f, 0.f };
-	SDL_FRect caption_box{ 0.f, 0.f, 0.f, 0.f };
-	SDL_Texture* caption = nullptr;
+	SDL_Texture* content = nullptr;
 	float caption_scale;
 	void* event_param = nullptr;
 	button_evt event = nullptr;
 	bool pushed = false;
 };
 
-void InitButton(Button& button, SDL_Texture* caption, button_evt event, void* evt_param, SDL_FRect dimensions, unsigned short border_width = 4, unsigned short padding = 10, bool rescale_caption = true) {
+void InitButton(Button& button, SDL_Renderer* renderer, button_evt event, void* evt_param, SDL_FRect dimensions, const char* caption = nullptr, float text_size = 0.f, const char* image_file = nullptr, unsigned short border_width = 4, unsigned short padding = 10) {
 	button.pos = { dimensions.x, dimensions.y, dimensions.w, dimensions.h };
-	button.inner = { button.pos.x + border_width,
-					 button.pos.y + border_width,
-					 button.pos.w - border_width * 2,
-					 button.pos.h - border_width * 2 };
+	button.inner = { button.pos.x + border_width + padding,
+					 button.pos.y + border_width + padding,
+					 button.pos.w - border_width * 2 - padding * 2,
+					 button.pos.h - border_width * 2 - padding * 2};
 	button.caption = caption;
-	SDL_FRect padding_box = { button.inner.x + padding,
-							  button.inner.y + padding,
-							  button.inner.w - padding * 2,
-							  button.inner.h - padding * 2 };
 	if (rescale_caption) {
 		button.caption_scale = fminf(padding_box.w / button.caption->w, padding_box.h / button.caption->h);
 	}
@@ -100,8 +95,26 @@ void InitButton(Button& button, SDL_Texture* caption, button_evt event, void* ev
 }
 
 void DestroyButton(Button* button) {
-	SDL_DestroyTexture(button->caption);
+	SDL_DestroyTexture(button->content);
 	SDL_free(button);
+}
+
+void CheckButtonEvent(Button& button) {
+	static SDL_FPoint mouse_pos;
+	SDL_MouseButtonFlags mouse_buttons = SDL_GetMouseState(&mouse_pos.x, &mouse_pos.y);
+
+	if (SDL_PointInRectFloat(&mouse_pos, &button.pos)) {
+		if ((mouse_buttons & SDL_BUTTON_LEFT) && !button.pushed) {
+			button.pushed = true;
+		}
+		else if (!(mouse_buttons & SDL_BUTTON_LEFT) && button.pushed) {
+			button.pushed = false;
+			(*button.event)(button.event_param);
+		}
+	}
+	else if (!(mouse_buttons & SDL_BUTTON_LEFT)) {
+		button.pushed = false;
+	}
 }
 
 SDL_FRect GetButtonHoveredRect(const SDL_FRect& rect) {

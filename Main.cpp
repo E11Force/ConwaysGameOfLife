@@ -7,7 +7,6 @@ static SDL_Window* window = NULL;
 static SDL_Renderer* renderer = NULL;
 
 static field_config configs;
-static cell_field field;
 
 static AppState state;
 

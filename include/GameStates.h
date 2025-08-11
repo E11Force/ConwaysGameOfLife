@@ -12,24 +12,6 @@ static unsigned short button_count;
 static Label* labels;
 static unsigned short label_count;
 
-void CheckButtonEvent(Button& button) {
-	static SDL_FPoint mouse_pos;
-	SDL_MouseButtonFlags mouse_buttons = SDL_GetMouseState(&mouse_pos.x, &mouse_pos.y);
-
-	if (SDL_PointInRectFloat(&mouse_pos, &button.pos)) {
-		if ((mouse_buttons & SDL_BUTTON_LEFT) && !button.pushed) {
-			button.pushed = true;
-		}
-		else if (!(mouse_buttons & SDL_BUTTON_LEFT) && button.pushed) {
-			button.pushed = false;
-			(*button.event)(button.event_param);
-		}
-	}
-	else if (!(mouse_buttons & SDL_BUTTON_LEFT)) {
-		button.pushed = false;
-	}
-}
-
 void HandleButtons(SDL_Renderer* renderer) {
 	for (int i = 0; i < button_count; i++) {
 		CheckButtonEvent(buttons[i]);
@@ -46,6 +28,14 @@ void HandleLabels(SDL_Renderer* renderer) {
 void ClearScreen(SDL_Renderer* renderer) {
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 	SDL_RenderClear(renderer);
+}
+
+//////////////////////////////
+//	MAIN GAME RESOURCE INITIALIZATION
+//////////////////////////////
+
+void InitGame() {
+	
 }
 
 //////////////////////////////
@@ -76,9 +66,9 @@ void LoadMenuResources(SDL_Renderer* renderer, void* app_state, const field_conf
 
 	float headers_top = 200.f;
 	float headers_spacing = 20.f;
-	InitLabelText(&labels[0], renderer, "Corwan's Game of Life", FONT_FILE, 60, { size.render_width / 2.f, headers_top + 30 }, true);
+	InitLabelText(&labels[0], renderer, "Corwan's Game of Life", 60, { size.render_width / 2.f, headers_top + 30 }, true);
 
-	InitLabelText(&labels[1], renderer, "by BuBaReK", FONT_FILE, 20, { size.render_width / 2.f, headers_top + labels[0].label->h + headers_spacing + 10 }, true);
+	InitLabelText(&labels[1], renderer, "by BuBaReK", 20, { size.render_width / 2.f, headers_top + labels[0].label->h + headers_spacing + 10 }, true);
 	TTF_Font* header_font = TTF_OpenFont(FONT_FILE, 30);
 	float buttons_top = headers_top + labels[0].pos.h + headers_spacing * 2 + labels[1].pos.h + 220.f;
 	float buttons_spacing = 130.f;
@@ -128,7 +118,7 @@ void GoL_MenuFlow(SDL_Renderer* renderer, const field_config& size) {
 	HandleLabels(renderer);
 }
 
-/*---------*/
+/*
 
 /*--- Rules Flow ---*/
 
@@ -176,4 +166,4 @@ void GoL_EditorFlow(SDL_Renderer* renderer, const field_config& size) {
 
 }
 
-/*---------*/
+*/
