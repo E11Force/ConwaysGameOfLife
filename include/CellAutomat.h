@@ -14,11 +14,12 @@ static cell_field field = nullptr;
 static cell_field buffer_field = nullptr;
 
 struct field_config {
-	int render_width, render_height;
 	int width, height;
 };
 
-void AllocFields(const field_config& size) {
+static field_config size;
+
+void AllocFields() {
 	field = (cell_field)calloc(size.height, sizeof(cell_row));
 	buffer_field = (cell_field)calloc(size.height, sizeof(cell_row));
 	for (int i = 0; i < size.height; i++) {
@@ -30,7 +31,7 @@ void AllocFields(const field_config& size) {
 	}
 }
 
-void DeleteFields(const field_config& size, cell_field field) {
+void DeleteFields() {
 	for (int i = 0; i < size.height; i++) {
 		free(field[i]);
 		free(buffer_field[i]);
@@ -39,8 +40,14 @@ void DeleteFields(const field_config& size, cell_field field) {
 	free(buffer_field);
 }
 
-void UpdateField(cell_field& field, field_config size) {
-	for (int i = 0; i < size.height; i++) {
+struct update_range {
+	int start_row;
+	int finish_row;
+};
+
+static int UpdateFieldPart(void* part) {
+	update_range* update_part = (update_range*)part;
+	for (int i = update_part->start_row; i < update_part->finish_row; i++) {
 		for (int j = 0; j < size.width; j++) {
 			buffer_field[i][j] = 0;
 			for (int k = -1; k <= 1; k++) {
@@ -57,24 +64,48 @@ void UpdateField(cell_field& field, field_config size) {
 			}
 		}
 	}
+	return 0;
+}
+
+void UpdateField() {
+	static const int thread_count = 6;
+	thrd_t threads[thread_count];
+	update_range ranges[thread_count];
+
+	int range_diff = size.height / thread_count;
+	for (int i = 0; i < thread_count; i++) {
+		ranges[i].start_row = i * (range_diff);
+		ranges[i].finish_row = (i + 1) * (range_diff);
+	}
+	ranges[thread_count - 1].finish_row += range_diff % 6;
+
+	for (int i = 0; i < thread_count; i++) {
+		thrd_create(&threads[i], &UpdateFieldPart, &ranges[i]);
+	}
+
+	for (int i = 0; i < thread_count; i++) {
+		int res_stub;
+		thrd_join(threads[i], &res_stub);
+	}
 
 	cell_field change_buffer = field;
 	field = buffer_field;
 	buffer_field = change_buffer;
 }
 
-bool InitAutomata(cell_field& field_state, field_config& size, SDL_Renderer* renderer) {
-	SDL_GetRenderOutputSize(renderer, &size.render_width, &size.render_height);
+bool InitAutomata(SDL_Renderer* renderer) {
+	int render_width, render_height;
+	SDL_GetRenderOutputSize(renderer, &render_width, &render_height);
 
-	if (size.render_height % CELL_SIZE != 0 || size.render_width % CELL_SIZE != 0) return false;
+	if (render_height % CELL_SIZE != 0 || render_width % CELL_SIZE != 0) return false;
 
-	size.width = size.render_width / CELL_SIZE;
-	size.height = size.render_height / CELL_SIZE;
-	AllocFields(size);
+	size.width = render_width / CELL_SIZE;
+	size.height = render_height / CELL_SIZE;
+	AllocFields();
 	return true;
 }
 
-void InitFieldFromBMPImage(cell_field field, field_config size, const char* image) {
+void InitFieldFromBMPImage(const char* image) {
 	SDL_Surface* image_buffer = SDL_LoadBMP(image);
 	if (!image_buffer) {
 		field[0][1] = 1;
@@ -105,7 +136,7 @@ void InitFieldFromBMPImage(cell_field field, field_config size, const char* imag
 	}
 }
 
-void RenderField(const field_config& size, SDL_Renderer* renderer) {
+void RenderField(SDL_Renderer* renderer) {
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
 
 	static SDL_FRect cell_draw_buffer{ 0.f, 0.f, (float)CELL_SIZE, (float)CELL_SIZE };

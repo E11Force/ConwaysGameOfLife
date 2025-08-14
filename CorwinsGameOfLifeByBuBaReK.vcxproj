@@ -110,7 +110,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SDL_HOME)\include;$(SDLTTF_HOME)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SDL_HOME)\include;$(SDLTTF_HOME)\include;$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -127,7 +127,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SDL_HOME)\include;$(SDLTTF_HOME)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SDL_HOME)\include;$(SDLTTF_HOME)\include;$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -141,25 +141,16 @@
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CellAutomat.h" />
-    <ClInclude Include="GameStates.h" />
-    <ClInclude Include="GlobalDefinitions.h" />
-    <ClInclude Include="GoL.h" />
-    <ClInclude Include="GoL_Button.h" />
-    <ClInclude Include="GoL_ButtonEvents.h" />
-    <ClInclude Include="GoL_GameFlow.h" />
-    <ClInclude Include="GoL_Global.h" />
-    <ClInclude Include="GoL_Label.h" />
-    <ClInclude Include="GoL_Renderers.h" />
-    <ClInclude Include="GoL_Utils.h" />
-    <ClInclude Include="UIElements.h" />
-    <ClInclude Include="Utils.h" />
+    <ClInclude Include="include\CellAutomat.h" />
+    <ClInclude Include="include\GameStates.h" />
+    <ClInclude Include="include\GoL.h" />
+    <ClInclude Include="include\UIElements.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\SDL\VisualC\SDL\SDL.vcxproj">
+    <ProjectReference Include="C:\SDL\VisualC\SDL\SDL.vcxproj">
       <Project>{81ce8daf-ebb2-4761-8e45-b71abcca8c68}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\SDL_ttf\VisualC\SDL_ttf.vcxproj">
+    <ProjectReference Include="C:\SDL_ttf\VisualC\SDL_ttf.vcxproj">
       <Project>{dddbd07d-dc76-4af6-8d02-3e2deb6ee255}</Project>
     </ProjectReference>
   </ItemGroup>

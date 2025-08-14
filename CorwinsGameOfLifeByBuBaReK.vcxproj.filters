@@ -20,43 +20,16 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GoL.h">
+    <ClInclude Include="include\CellAutomat.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GoL_Renderers.h">
+    <ClInclude Include="include\GameStates.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GoL_Global.h">
+    <ClInclude Include="include\GoL.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GoL_GameFlow.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GoL_ButtonEvents.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GoL_Button.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GoL_Label.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GoL_Utils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UIElements.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Utils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CellAutomat.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GlobalDefinitions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameStates.h">
+    <ClInclude Include="include\UIElements.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

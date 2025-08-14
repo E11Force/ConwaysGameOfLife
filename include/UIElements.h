@@ -22,38 +22,37 @@ SDL_Texture* GetRenderedText(SDL_Renderer* renderer, const char* caption, float 
 //////////////////////////////
 
 struct Label {
-	SDL_FPoint pos{ 0.f, 0.f };
-	float scale = 0.f;
-	SDL_Texture* label = nullptr;
+	SDL_FRect dstrect;
+	SDL_Texture* content;
 };
 
-void InitLabelText(Label* label, SDL_Renderer* renderer, const char* caption, float text_size, SDL_FPoint position, bool center_position = false) {
-	label->label = GetRenderedText(renderer, caption, text_size);
-	label->scale = 1.f;
-	label->pos.x = (center_position ? position.x - label->label->w / 2 : position.x);
-	label->pos.y = (center_position ? position.y - label->label->h / 2 : position.y);
+void InitLabelText(Label& label, SDL_Renderer* renderer, const char* caption, float text_size, SDL_FPoint position, bool center_position = false) {
+	label.content = GetRenderedText(renderer, caption, text_size);
+	label.dstrect.x = (center_position ? position.x - label.content->w / 2 : position.x);
+	label.dstrect.y = (center_position ? position.y - label.content->h / 2 : position.y);
+	label.dstrect.w = label.content->w;
+	label.dstrect.h = label.content->h;
 }
 
-void InitLabelImage(Label* label, SDL_Renderer* renderer, const char* image_file, SDL_FRect dimensions) {
+void InitLabelImage(Label& label, SDL_Renderer* renderer, const char* image_file, SDL_FRect dstrect) {
 	SDL_Surface* image_surface = SDL_LoadBMP(image_file);
 	SDL_Texture* image_texture = SDL_CreateTextureFromSurface(renderer, image_surface);
 	SDL_DestroySurface(image_surface);
 
-	label->label = image_texture;
-	label->pos.x = dimensions.x;
-	label->pos.y = dimensions.y;
-	label->pos.h = fminf(dimensions.h, image_texture->h);
-	label->pos.w = fminf(dimensions.w, image_texture->w);
-	label->scale = fminf(dimensions.h / label->pos.h, dimensions.w / label->pos.w);
+	label.content = image_texture;
+	label.dstrect.x = dstrect.x;
+	label.dstrect.y = dstrect.y;
+	label.dstrect.w = (dstrect.w == 0 ? image_texture->w : dstrect.w);
+	label.dstrect.h = (dstrect.h == 0 ? image_texture->h : dstrect.h);
 }
 
 void DestroyLabel(Label* label) {
-	SDL_DestroyTexture(label->label);
+	SDL_DestroyTexture(label->content);
 	SDL_free(label);
 }
 
-inline void RenderLabel(SDL_Renderer* renderer, Label& label) {
-	SDL_RenderTextureTiled(renderer, label.label, nullptr, label.scale, &(label.pos));
+inline void RenderLabel(Label& label, SDL_Renderer* renderer) {
+	SDL_RenderTexture(renderer, label.content, nullptr, &label.dstrect);
 }
 
 //////////////////////////////
@@ -63,33 +62,27 @@ inline void RenderLabel(SDL_Renderer* renderer, Label& label) {
 typedef void (*button_evt)(void*);
 
 struct Button {
-	SDL_FRect pos{ 0.f, 0.f, 0.f, 0.f };
-	SDL_FRect inner{ 0.f, 0.f, 0.f, 0.f };
+	SDL_FRect dstrect{ 0.f, 0.f, 0.f, 0.f };
+	SDL_FRect border_rect{ 0.f, 0.f, 0.f, 0.f };
+	SDL_FRect content_rect{ 0.f, 0.f, 0.f, 0.f };
 	SDL_Texture* content = nullptr;
-	float caption_scale;
 	void* event_param = nullptr;
 	button_evt event = nullptr;
 	bool pushed = false;
 };
 
-void InitButton(Button& button, SDL_Renderer* renderer, button_evt event, void* evt_param, SDL_FRect dimensions, const char* caption = nullptr, float text_size = 0.f, const char* image_file = nullptr, unsigned short border_width = 4, unsigned short padding = 10) {
-	button.pos = { dimensions.x, dimensions.y, dimensions.w, dimensions.h };
-	button.inner = { button.pos.x + border_width + padding,
-					 button.pos.y + border_width + padding,
-					 button.pos.w - border_width * 2 - padding * 2,
-					 button.pos.h - border_width * 2 - padding * 2};
-	button.caption = caption;
-	if (rescale_caption) {
-		button.caption_scale = fminf(padding_box.w / button.caption->w, padding_box.h / button.caption->h);
-	}
-	else {
-		button.caption_scale = 1.f;
-	}
-	button.caption_box.w = button.caption->w * button.caption_scale;
-	button.caption_box.h = button.caption->h * button.caption_scale;
-	button.caption_box.x = padding_box.x + (padding_box.w - button.caption_box.w) / 2;
-	button.caption_box.y = padding_box.y + (padding_box.h - button.caption_box.h) / 2;
+void InitButtonText(Button& button, SDL_Renderer* renderer, SDL_FRect dstrect, const char* caption, float text_size, button_evt event = nullptr, void* evt_param = nullptr, unsigned char border_width = 4, unsigned char padding = 10) {
+	button.dstrect = dstrect;
+	button.border_rect = {  button.dstrect.x - border_width,
+							button.dstrect.y - border_width,
+							button.dstrect.w + border_width * 2,
+							button.dstrect.h + border_width * 2};
+	button.content_rect = { button.dstrect.x + padding,
+							button.dstrect.y + padding,
+							button.dstrect.w - padding * 2,
+							button.dstrect.h - padding * 2 }; // remake content rect to conform to content dimensions
 
+	button.content = GetRenderedText(renderer, caption, text_size);
 	button.event = event;
 	button.event_param = evt_param;
 }
@@ -103,7 +96,7 @@ void CheckButtonEvent(Button& button) {
 	static SDL_FPoint mouse_pos;
 	SDL_MouseButtonFlags mouse_buttons = SDL_GetMouseState(&mouse_pos.x, &mouse_pos.y);
 
-	if (SDL_PointInRectFloat(&mouse_pos, &button.pos)) {
+	if (SDL_PointInRectFloat(&mouse_pos, &button.dstrect)) {
 		if ((mouse_buttons & SDL_BUTTON_LEFT) && !button.pushed) {
 			button.pushed = true;
 		}
