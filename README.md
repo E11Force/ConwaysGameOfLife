@@ -1,5 +1,6 @@
 # Basic cell automat "Conway's game of life"
 <p>Implementation of cell automat "Conway's game of life" invented by John Horton Conway in 1970.</p>
+<p>It is made purely for experimentation purposes as to test capabilities of SDL libraries and purely functional programming paradigm. As to conform to functional programming style, all code is written mostly on pure C.</p>
 <p>Game of life is one of the examples of system emergent properties. Once the initial state is set
 all cells will act according to preset rules. This behaviour can produce various 'configurations'
 that will have different behaviours, such as moving in particular direction, producing other 'configurations'
