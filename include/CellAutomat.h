@@ -45,6 +45,10 @@ struct update_range {
 	int finish_row;
 };
 
+static int thread_count;
+static update_range* ranges;
+static thrd_t* threads;
+
 static int UpdateFieldPart(void* part) {
 	update_range* update_part = (update_range*)part;
 	for (int i = update_part->start_row; i < update_part->finish_row; i++) {
@@ -68,17 +72,6 @@ static int UpdateFieldPart(void* part) {
 }
 
 void UpdateField() {
-	static const int thread_count = 6;
-	thrd_t threads[thread_count];
-	update_range ranges[thread_count];
-
-	int range_diff = size.height / thread_count;
-	for (int i = 0; i < thread_count; i++) {
-		ranges[i].start_row = i * (range_diff);
-		ranges[i].finish_row = (i + 1) * (range_diff);
-	}
-	ranges[thread_count - 1].finish_row += range_diff % 6;
-
 	for (int i = 0; i < thread_count; i++) {
 		thrd_create(&threads[i], &UpdateFieldPart, &ranges[i]);
 	}
@@ -96,12 +89,22 @@ void UpdateField() {
 bool InitAutomata(SDL_Renderer* renderer) {
 	int render_width, render_height;
 	SDL_GetRenderOutputSize(renderer, &render_width, &render_height);
-
 	if (render_height % CELL_SIZE != 0 || render_width % CELL_SIZE != 0) return false;
-
 	size.width = render_width / CELL_SIZE;
 	size.height = render_height / CELL_SIZE;
 	AllocFields();
+
+	thread_count = 6; // maybe change it so that thread count will be set as the current count of CPU cores
+	threads = (thrd_t*)SDL_calloc(thread_count, sizeof(thrd_t));
+	ranges = (update_range*)SDL_calloc(thread_count, sizeof(update_range));
+
+	int range_diff = size.height / thread_count;
+	for (int i = 0; i < thread_count; i++) {
+		ranges[i].start_row = i * (range_diff);
+		ranges[i].finish_row = (i + 1) * (range_diff);
+	}
+	ranges[thread_count - 1].finish_row += range_diff % thread_count;
+
 	return true;
 }
 

@@ -13,9 +13,12 @@ static Label* labels;
 static unsigned short label_count;
 
 void HandleButtons(SDL_Renderer* renderer) {
+	static SDL_FPoint mouse_pos;
+	static SDL_MouseButtonFlags mouse_buttons;
+	mouse_buttons = SDL_GetMouseState(&mouse_pos.x, &mouse_pos.y);
 	for (int i = 0; i < button_count; i++) {
-		CheckButtonEvent(buttons[i]);
-		RenderButton(renderer, buttons[i]);
+		CheckButtonEvent(buttons[i], mouse_pos, mouse_buttons);
+		RenderButton(renderer, buttons[i], mouse_pos);
 	}
 }
 
@@ -111,59 +114,9 @@ void UnloadMenuResources() {
 	SDL_free(buttons);
 }
 
-void GoL_MenuFlow(SDL_Renderer* renderer, const field_config& size) {
+void MenuFlow(SDL_Renderer* renderer, const field_config& size) {
 	ClearScreen(renderer);
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
 	HandleButtons(renderer);
 	HandleLabels(renderer);
 }
-
-/*
-
-/*--- Rules Flow ---*/
-
-void GoL_LoadRulesResources(SDL_Renderer* renderer, void* app_state, const field_config& size) {
-
-}
-
-void GoL_UnloadRulesResources() {
-
-}
-
-void GoL_RulesFlow(SDL_Renderer* renderer, const field_config& size) {
-
-}
-
-/*---------*/
-
-/*--- Rules Flow ---*/
-
-void GoL_LoadPregameResources(SDL_Renderer* renderer, void* app_state, const field_config& size) {
-
-}
-
-void GoL_UnloadPregameResources() {
-
-}
-
-void GoL_PregameFlow(SDL_Renderer* renderer, const field_config& size) {
-
-}
-
-/*---------*/
-
-/*--- Rules Flow ---*/
-
-void GoL_LoadEditorResources(SDL_Renderer* renderer, void* app_state, const field_config& size) {
-
-}
-
-void GoL_UnloadEditorResources() {
-
-}
-
-void GoL_EditorFlow(SDL_Renderer* renderer, const field_config& size) {
-
-}
-
-*/

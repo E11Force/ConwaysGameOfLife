@@ -25,7 +25,7 @@
     <ProjectGuid>{9b09b7bf-82e2-4c2a-bd64-d5c45dd11c3d}</ProjectGuid>
     <RootNamespace>CorwinsGameOfLifeByBuBaReK</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>CorwansGameOfLifeByBuBaReK</ProjectName>
+    <ProjectName>ConwaysGameOfLifeByBuBaReK</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

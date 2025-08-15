@@ -54,7 +54,7 @@ void DestroyLabel(Label* label) {
 	SDL_free(label);
 }
 
-inline void RenderLabel(Label& label, SDL_Renderer* renderer) {
+inline void RenderLabel(SDL_Renderer* renderer, Label& label) {
 	SDL_RenderTexture(renderer, label.content, nullptr, &label.dstrect);
 }
 
@@ -87,18 +87,18 @@ static void SetConformingContentRect(Button& button, unsigned char padding) {
 							   button.dstrect.y + padding,
 							   button.dstrect.w - padding * 2,
 							   button.dstrect.h - padding * 2 };
-	float width_scale = conform_rect.w / button.content.w;
-	float height_scale = conform_rect.h / button.content.h;
-	if(button.content.h * width_scale <= conform_rect.h)
+	float width_scale = conform_rect.w / button.content->w;
+	float height_scale = conform_rect.h / button.content->h;
+	if(button.content->h * width_scale <= conform_rect.h)
 		button.content_rect = { conform_rect.x,
-								conform_rect.y - (conform_rect.h - button.content.h * width_scale) / 2,
-								button.content.w * width_scale,
-								button.content.h * width_scale };
+								conform_rect.y - (conform_rect.h - button.content->h * width_scale) / 2,
+								button.content->w * width_scale,
+								button.content->h * width_scale };
 	else
-		button.content_rect = { conform_rect.x - (conform_rect.w - button.content.w * height_scale) / 2,
+		button.content_rect = { conform_rect.x - (conform_rect.w - button.content->w * height_scale) / 2,
 								conform_rect.y,
-								button.content.w * height_scale,
-								button.content.h * height_scale};
+								button.content->w * height_scale,
+								button.content->h * height_scale};
 }
 
 void InitButtonText(Button& button, SDL_Renderer* renderer, SDL_FRect dstrect, const char* caption, float text_size, button_evt event = nullptr, void* evt_param = nullptr, unsigned char border_width = 4, unsigned char padding = 10) {
@@ -122,10 +122,7 @@ void DestroyButton(Button* button) {
 	SDL_free(button);
 }
 
-void CheckButtonEvent(Button& button) {
-	static SDL_FPoint mouse_pos;
-	SDL_MouseButtonFlags mouse_buttons = SDL_GetMouseState(&mouse_pos.x, &mouse_pos.y);
-
+void CheckButtonEvent(Button& button, SDL_FPoint& mouse_pos, SDL_MouseButtonFlags& mouse_buttons) {
 	if (SDL_PointInRectFloat(&mouse_pos, &button.dstrect)) {
 		if ((mouse_buttons & SDL_BUTTON_LEFT) && !button.pushed) {
 			button.pushed = true;
