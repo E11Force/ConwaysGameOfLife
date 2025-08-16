@@ -20,11 +20,11 @@ struct field_config {
 static field_config size;
 
 void AllocFields() {
-	field = (cell_field)calloc(size.height, sizeof(cell_row));
-	buffer_field = (cell_field)calloc(size.height, sizeof(cell_row));
+	field = (cell_field)SDL_calloc(size.height, sizeof(cell_row));
+	buffer_field = (cell_field)SDL_calloc(size.height, sizeof(cell_row));
 	for (int i = 0; i < size.height; i++) {
-		field[i] = (cell_row)calloc(size.width, sizeof(cell));
-		buffer_field[i] = (cell_row)calloc(size.width, sizeof(cell));
+		field[i] = (cell_row)SDL_calloc(size.width, sizeof(cell));
+		buffer_field[i] = (cell_row)SDL_calloc(size.width, sizeof(cell));
 		for (int j = 0; j < size.width; j++) {
 			field[i][j] = 0;
 		}
@@ -33,11 +33,11 @@ void AllocFields() {
 
 void DeleteFields() {
 	for (int i = 0; i < size.height; i++) {
-		free(field[i]);
-		free(buffer_field[i]);
+		SDL_free(field[i]);
+		SDL_free(buffer_field[i]);
 	}
-	free(field);
-	free(buffer_field);
+	SDL_free(field);
+	SDL_free(buffer_field);
 }
 
 struct update_range {

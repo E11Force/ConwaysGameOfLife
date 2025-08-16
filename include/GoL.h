@@ -2,10 +2,8 @@
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
-#include <SDL3/SDL_thread.h>
 #include <SDL3_ttf/SDL_ttf.h>
 
-#include <string.h>
 #include <threads.h>
 #include <memory.h>
 #include <UIElements.h>

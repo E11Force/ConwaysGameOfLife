@@ -59,8 +59,6 @@ SDL_AppResult SDL_AppIterate(void* appstate)
     SDL_GetRenderOutputSize(renderer, &configs.render_width, &configs.render_height);
     const Uint64 before = SDL_GetTicks();
 
-    //GoL_RenderField(field, configs, renderer);
-    //GoL_CheckField(field, configs);
     switch (state)
     {
     case MENU:

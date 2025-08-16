@@ -24,6 +24,16 @@ SDL_Texture* LoadBMPImage(const char* image_file) {
 	return image_texture;
 }
 
+struct Centering {
+	bool x;
+	bool y;
+};
+
+#define HORIZONTAL_CENTERING {true, false}
+#define VERTICAL_CENTERING {false, true}
+#define ABSOLUTE_CENTERING {true, true}
+#define NO_CENTERING {false, false}
+
 //////////////////////////////
 //		LABEL DEFINITIONS
 //////////////////////////////
@@ -33,10 +43,10 @@ struct Label {
 	SDL_Texture* content;
 };
 
-void InitLabelText(Label& label, SDL_Renderer* renderer, const char* caption, float text_size, SDL_FPoint position, bool center_position = false) {
+void InitLabelText(Label& label, SDL_Renderer* renderer, const char* caption, float text_size, SDL_FPoint position, Centering center_position = { false, false }) {
 	label.content = GetRenderedText(renderer, caption, text_size);
-	label.dstrect.x = (center_position ? position.x - label.content->w / 2 : position.x);
-	label.dstrect.y = (center_position ? position.y - label.content->h / 2 : position.y);
+	label.dstrect.x = (center_position.x ? position.x - label.content->w / 2 : position.x);
+	label.dstrect.y = (center_position.y ? position.y - label.content->h / 2 : position.y);
 	label.dstrect.w = label.content->w;
 	label.dstrect.h = label.content->h;
 }

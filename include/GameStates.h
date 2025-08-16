@@ -4,7 +4,7 @@
 //	COMMON STATE DEFINITIONS
 //////////////////////////////
 
-enum AppState { MENU, EDITOR, RULES, PREGAME, GAME, EXIT };
+enum AppState { MENU, EDITOR, RULES, PREGAME, GAME, EXIT } global_app_state;
 
 static Button* buttons;
 static unsigned short button_count;
@@ -16,6 +16,7 @@ void HandleButtons(SDL_Renderer* renderer) {
 	static SDL_FPoint mouse_pos;
 	static SDL_MouseButtonFlags mouse_buttons;
 	mouse_buttons = SDL_GetMouseState(&mouse_pos.x, &mouse_pos.y);
+	SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
 	for (int i = 0; i < button_count; i++) {
 		CheckButtonEvent(buttons[i], mouse_pos, mouse_buttons);
 		RenderButton(renderer, buttons[i], mouse_pos);
@@ -23,6 +24,7 @@ void HandleButtons(SDL_Renderer* renderer) {
 }
 
 void HandleLabels(SDL_Renderer* renderer) {
+	SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
 	for (int i = 0; i < label_count; i++) {
 		RenderLabel(renderer, labels[i]);
 	}
@@ -33,90 +35,96 @@ void ClearScreen(SDL_Renderer* renderer) {
 	SDL_RenderClear(renderer);
 }
 
-//////////////////////////////
-//	MAIN GAME RESOURCE INITIALIZATION
-//////////////////////////////
-
-void InitGame() {
-	
+void BasicStateHandler(SDL_Renderer* renderer) {
+	ClearScreen(renderer);
+	HandleButtons(renderer);
+	HandleLabels(renderer);
 }
 
 //////////////////////////////
 //		MENU STATE 
 //////////////////////////////
 
+void UnloadMenuResources();
+
 // BUTTON EVENTS
 
 void StartButtonEvt(void* app_state) {
 	*((AppState*)app_state) = AppState::PREGAME;
+	UnloadMenuResources();
 }
 
 void RulesButtonEvt(void* app_state) {
 	*((AppState*)app_state) = AppState::RULES;
+	UnloadMenuResources();
 }
 
 void ExitButtonEvt(void* app_state) {
 	*((AppState*)app_state) = AppState::EXIT;
+	UnloadMenuResources();
 }
 
 // MANAGING RESOURCES
 
-void LoadMenuResources(SDL_Renderer* renderer, void* app_state, const field_config& size) {
+void LoadMenuResources(SDL_Renderer* renderer) {
 	buttons = (Button*)SDL_calloc((size_t)3, sizeof(Button));
 	button_count = 3;
 	labels = (Label*)SDL_calloc((size_t)2, sizeof(Label));
 	label_count = 2;
 
-	float headers_top = 200.f;
+	int renderer_width, renderer_height;
+	SDL_GetRenderOutputSize(renderer, &renderer_width, &renderer_height);
+
 	float headers_spacing = 20.f;
-	InitLabelText(&labels[0], renderer, "Corwan's Game of Life", 60, { size.render_width / 2.f, headers_top + 30 }, true);
+	SDL_FPoint headers_position_buffer = {renderer_width / 2.f, 200.f};
+	InitLabelText(labels[0], renderer, "Conway's game of life", 60.f, headers_position_buffer, HORIZONTAL_CENTERING);
+	
+	headers_position_buffer.y += labels[0].content->h + headers_spacing;
+	InitLabelText(labels[1], renderer, "by BuBaReK", 20.f, headers_position_buffer, HORIZONTAL_CENTERING);
 
-	InitLabelText(&labels[1], renderer, "by BuBaReK", 20, { size.render_width / 2.f, headers_top + labels[0].label->h + headers_spacing + 10 }, true);
-	TTF_Font* header_font = TTF_OpenFont(FONT_FILE, 30);
-	float buttons_top = headers_top + labels[0].pos.h + headers_spacing * 2 + labels[1].pos.h + 220.f;
-	float buttons_spacing = 130.f;
-	SDL_Surface* startbuttoncaption_surface = TTF_RenderText_Blended(header_font, "Start", 5, { 255, 255, 255, SDL_ALPHA_OPAQUE });
-	SDL_Texture* startbuttoncaption_texture = SDL_CreateTextureFromSurface(renderer, startbuttoncaption_surface);
-	SDL_DestroySurface(startbuttoncaption_surface);
-	SDL_FRect button_dimensions = { (float)size.render_width / 2 - 100,
-									buttons_top,
-									200,
-									100 };
-	InitButton(buttons[0], startbuttoncaption_texture, &StartButtonEvt, app_state, button_dimensions);
 
-	SDL_Surface* rulesbuttoncaption_surface = TTF_RenderText_Blended(header_font, "Rules", 5, { 255, 255, 255, SDL_ALPHA_OPAQUE });
-	SDL_Texture* rulesbuttoncaption_texture = SDL_CreateTextureFromSurface(renderer, rulesbuttoncaption_surface);
-	SDL_DestroySurface(rulesbuttoncaption_surface);
-	button_dimensions = { (float)size.render_width / 2 - 100,
-						  buttons_top + buttons_spacing,
-						  200,
-						  100 };
-	InitButton(buttons[1], rulesbuttoncaption_texture, &RulesButtonEvt, app_state, button_dimensions);
+	float buttons_spacing = 30.f;	
+	SDL_FRect buttons_dstrect_buffer = {headers_position_buffer.x, 
+										headers_position_buffer.y + labels[1].content->h + 100.f,
+										200, 
+										100};
+	InitButtonText(buttons[0], renderer, buttons_dstrect_buffer, "Start", 30, &StartButtonEvt, &global_app_state, 4, 5);
 
-	SDL_Surface* exitbuttoncaption_surface = TTF_RenderText_Blended(header_font, "Exit", 4, { 255, 255, 255, SDL_ALPHA_OPAQUE });
-	SDL_Texture* exitbuttoncaption_texture = SDL_CreateTextureFromSurface(renderer, exitbuttoncaption_surface);
-	SDL_DestroySurface(exitbuttoncaption_surface);
-	button_dimensions = { (float)size.render_width / 2 - 100,
-						  buttons_top + 2 * buttons_spacing,
-						  200,
-						  100 };
-	InitButton(buttons[2], exitbuttoncaption_texture, &ExitButtonEvt, app_state, button_dimensions);
+	buttons_dstrect_buffer.y += buttons_dstrect_buffer.h + buttons_spacing;
+	InitButtonText(buttons[1], renderer, buttons_dstrect_buffer, "Rules", 30, &RulesButtonEvt, &global_app_state, 4, 5);
+
+	buttons_dstrect_buffer.y += buttons_dstrect_buffer.h + buttons_spacing;
+	InitButtonText(buttons[2], renderer, buttons_dstrect_buffer, "Exit", 30, &ExitButtonEvt, &global_app_state, 4, 5);
 }
 
 void UnloadMenuResources() {
 	for (int i = 0; i < label_count; i++) {
-		SDL_DestroyTexture(labels[i].label);
+		SDL_DestroyTexture(labels[i].content);
 	}
 	SDL_free(labels);
 	for (int i = 0; i < button_count; i++) {
-		SDL_DestroyTexture(buttons[i].caption);
+		SDL_DestroyTexture(buttons[i].content);
 	}
 	SDL_free(buttons);
 }
 
-void MenuFlow(SDL_Renderer* renderer, const field_config& size) {
-	ClearScreen(renderer);
-	SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
-	HandleButtons(renderer);
-	HandleLabels(renderer);
+//////////////////////////////
+//	MAIN GAME MANAGEMENT
+//////////////////////////////
+
+void InitGame(SDL_Renderer* renderer) {
+	global_app_state = AppState::MENU;
+	LoadMenuResources(renderer);
+}
+
+SDL_AppResult GameHandler(SDL_Renderer* renderer) {
+	switch (global_app_state) {
+	case AppState::MENU:
+	case AppState::RULES:
+		BasicStateHandler(renderer);
+		break;
+	case AppState::EXIT:
+		return SDL_APP_SUCCESS;
+	}
+	return SDL_APP_CONTINUE;
 }
