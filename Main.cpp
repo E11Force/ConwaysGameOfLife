@@ -6,10 +6,6 @@
 static SDL_Window* window = NULL;
 static SDL_Renderer* renderer = NULL;
 
-static field_config configs;
-
-static AppState state;
-
 /* This function runs once at startup. */
 SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[])
 {
@@ -33,14 +29,7 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[])
         return SDL_APP_FAILURE;
     }
 #endif
-    GoL_init(field, configs, renderer);
-    GoL_LoadMenuResources(renderer, &state, configs);
-    state = AppState::MENU;
-    //Init_field_from_bmp(field, configs, "start_state.bmp");
-    //GoL_RenderField(field, configs, renderer);
-    //SDL_RenderPresent(renderer);
-    //SDL_Delay(2000);
-
+    InitGame(renderer);
     return SDL_APP_CONTINUE;
 }
 
@@ -56,26 +45,11 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event)
 /* This function runs once per frame, and is the heart of the program. */
 SDL_AppResult SDL_AppIterate(void* appstate)
 {
-    SDL_GetRenderOutputSize(renderer, &configs.render_width, &configs.render_height);
     const Uint64 before = SDL_GetTicks();
 
-    switch (state)
-    {
-    case MENU:
-        GoL_MenuFlow(renderer, configs);
-        break;
-    case EDITOR:
-        break;
-    case RULES:
-        break;
-    case PREGAME:
-        break;
-    case GAME:
-        break;
-    case EXIT:
-        return SDL_APP_SUCCESS;
-    default:
-        break;
+    switch (GameHandler(renderer)) {
+    case SDL_AppResult::SDL_APP_SUCCESS:
+        return SDL_AppResult::SDL_APP_SUCCESS;
     }
     SDL_RenderPresent(renderer);
 

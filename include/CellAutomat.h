@@ -86,12 +86,11 @@ void UpdateField() {
 	buffer_field = change_buffer;
 }
 
-bool InitAutomata(SDL_Renderer* renderer) {
+void InitAutomata(SDL_Renderer* renderer) {
 	int render_width, render_height;
 	SDL_GetRenderOutputSize(renderer, &render_width, &render_height);
-	if (render_height % CELL_SIZE != 0 || render_width % CELL_SIZE != 0) return false;
-	size.width = render_width / CELL_SIZE;
-	size.height = render_height / CELL_SIZE;
+	size.width = render_width / CELL_SIZE + (render_width % CELL_SIZE != 0);
+	size.height = render_height / CELL_SIZE + (render_height % CELL_SIZE != 0);
 	AllocFields();
 
 	thread_count = 6; // maybe change it so that thread count will be set as the current count of CPU cores
@@ -104,8 +103,6 @@ bool InitAutomata(SDL_Renderer* renderer) {
 		ranges[i].finish_row = (i + 1) * (range_diff);
 	}
 	ranges[thread_count - 1].finish_row += range_diff % thread_count;
-
-	return true;
 }
 
 void InitFieldFromBMPImage(const char* image) {

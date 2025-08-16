@@ -41,27 +41,37 @@ void BasicStateHandler(SDL_Renderer* renderer) {
 	HandleLabels(renderer);
 }
 
+void UnloadUIResources() {
+	for (int i = 0; i < label_count; i++) {
+		SDL_DestroyTexture(labels[i].content);
+	}
+	SDL_free(labels);
+	for (int i = 0; i < button_count; i++) {
+		SDL_DestroyTexture(buttons[i].content);
+	}
+	SDL_free(buttons);
+	button_count = label_count = 0;
+}
+
 //////////////////////////////
 //		MENU STATE 
 //////////////////////////////
-
-void UnloadMenuResources();
 
 // BUTTON EVENTS
 
 void StartButtonEvt(void* app_state) {
 	*((AppState*)app_state) = AppState::PREGAME;
-	UnloadMenuResources();
+	UnloadUIResources();
 }
 
 void RulesButtonEvt(void* app_state) {
 	*((AppState*)app_state) = AppState::RULES;
-	UnloadMenuResources();
+	UnloadUIResources();
 }
 
 void ExitButtonEvt(void* app_state) {
 	*((AppState*)app_state) = AppState::EXIT;
-	UnloadMenuResources();
+	UnloadUIResources();
 }
 
 // MANAGING RESOURCES
@@ -97,17 +107,6 @@ void LoadMenuResources(SDL_Renderer* renderer) {
 	InitButtonText(buttons[2], renderer, buttons_dstrect_buffer, "Exit", 30, &ExitButtonEvt, &global_app_state, 4, 5);
 }
 
-void UnloadMenuResources() {
-	for (int i = 0; i < label_count; i++) {
-		SDL_DestroyTexture(labels[i].content);
-	}
-	SDL_free(labels);
-	for (int i = 0; i < button_count; i++) {
-		SDL_DestroyTexture(buttons[i].content);
-	}
-	SDL_free(buttons);
-}
-
 //////////////////////////////
 //	MAIN GAME MANAGEMENT
 //////////////////////////////
@@ -115,6 +114,7 @@ void UnloadMenuResources() {
 void InitGame(SDL_Renderer* renderer) {
 	global_app_state = AppState::MENU;
 	LoadMenuResources(renderer);
+	InitAutomata(renderer);
 }
 
 SDL_AppResult GameHandler(SDL_Renderer* renderer) {
