@@ -87,24 +87,24 @@ void LoadMenuResources(SDL_Renderer* renderer) {
 
 	float headers_spacing = 20.f;
 	SDL_FPoint headers_position_buffer = {renderer_width / 2.f, 200.f};
-	InitLabelText(labels[0], renderer, "Conway's game of life", 60.f, headers_position_buffer, HORIZONTAL_CENTERING);
+	InitLabelText(labels[0], renderer, "Conway's game of life", 100.f, headers_position_buffer, HORIZONTAL_CENTERING);
 	
 	headers_position_buffer.y += labels[0].content->h + headers_spacing;
 	InitLabelText(labels[1], renderer, "by BuBaReK", 20.f, headers_position_buffer, HORIZONTAL_CENTERING);
 
 
 	float buttons_spacing = 30.f;	
-	SDL_FRect buttons_dstrect_buffer = {headers_position_buffer.x, 
+	SDL_FRect buttons_dstrect_buffer = {headers_position_buffer.x - 100.f, 
 										headers_position_buffer.y + labels[1].content->h + 100.f,
-										200, 
-										100};
-	InitButtonText(buttons[0], renderer, buttons_dstrect_buffer, "Start", 30, &StartButtonEvt, &global_app_state, 4, 5);
+										200.f, 
+										100.f};
+	InitButtonText(buttons[0], renderer, buttons_dstrect_buffer, "Start", 30, &StartButtonEvt, &global_app_state, 4, 10);
 
 	buttons_dstrect_buffer.y += buttons_dstrect_buffer.h + buttons_spacing;
-	InitButtonText(buttons[1], renderer, buttons_dstrect_buffer, "Rules", 30, &RulesButtonEvt, &global_app_state, 4, 5);
+	InitButtonText(buttons[1], renderer, buttons_dstrect_buffer, "Rules", 30, &RulesButtonEvt, &global_app_state, 4, 10);
 
 	buttons_dstrect_buffer.y += buttons_dstrect_buffer.h + buttons_spacing;
-	InitButtonText(buttons[2], renderer, buttons_dstrect_buffer, "Exit", 30, &ExitButtonEvt, &global_app_state, 4, 5);
+	InitButtonText(buttons[2], renderer, buttons_dstrect_buffer, "Exit", 30, &ExitButtonEvt, &global_app_state, 4, 10);
 }
 
 //////////////////////////////

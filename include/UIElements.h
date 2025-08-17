@@ -17,7 +17,7 @@ SDL_Texture* GetRenderedText(SDL_Renderer* renderer, const char* caption, float 
 	return text_texture;
 }
 
-SDL_Texture* LoadBMPImage(const char* image_file) {
+SDL_Texture* LoadBMPImage(SDL_Renderer* renderer, const char* image_file) {
 	SDL_Surface* image_surface = SDL_LoadBMP(image_file);
 	SDL_Texture* image_texture = SDL_CreateTextureFromSurface(renderer, image_surface);
 	SDL_DestroySurface(image_surface);
@@ -52,7 +52,7 @@ void InitLabelText(Label& label, SDL_Renderer* renderer, const char* caption, fl
 }
 
 void InitLabelImage(Label& label, SDL_Renderer* renderer, const char* image_file, SDL_FRect dstrect) {
-	label.content = LoadBMPImage(image_file);
+	label.content = LoadBMPImage(renderer, image_file);
 	label.dstrect.x = dstrect.x;
 	label.dstrect.y = dstrect.y;
 	label.dstrect.w = (dstrect.w < 0 ? label.content->w : dstrect.w);
@@ -101,11 +101,11 @@ static void SetConformingContentRect(Button& button, unsigned char padding) {
 	float height_scale = conform_rect.h / button.content->h;
 	if(button.content->h * width_scale <= conform_rect.h)
 		button.content_rect = { conform_rect.x,
-								conform_rect.y - (conform_rect.h - button.content->h * width_scale) / 2,
+								conform_rect.y + (conform_rect.h - button.content->h * width_scale) / 2,
 								button.content->w * width_scale,
-								button.content->h * width_scale };
+								button.content->h * width_scale};
 	else
-		button.content_rect = { conform_rect.x - (conform_rect.w - button.content->w * height_scale) / 2,
+		button.content_rect = { conform_rect.x + (conform_rect.w - button.content->w * height_scale) / 2,
 								conform_rect.y,
 								button.content->w * height_scale,
 								button.content->h * height_scale};
@@ -121,7 +121,7 @@ void InitButtonText(Button& button, SDL_Renderer* renderer, SDL_FRect dstrect, c
 
 void InitButtonImage(Button& button, SDL_Renderer* renderer, SDL_FRect dstrect, const char* image_file, button_evt event = nullptr, void* evt_param = nullptr, unsigned char border_width = 4, unsigned char padding = 10) {
 	InitBorderAndRect(button, dstrect, border_width);
-	button.content = LoadBMPImage(image_file);
+	button.content = LoadBMPImage(renderer, image_file);
 	SetConformingContentRect(button, padding);
 	button.event = event;
 	button.event_param = evt_param;
