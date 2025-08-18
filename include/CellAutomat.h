@@ -93,7 +93,7 @@ void InitAutomata(SDL_Renderer* renderer) {
 	size.height = render_height / CELL_SIZE + (render_height % CELL_SIZE != 0);
 	AllocFields();
 
-	thread_count = 6; // maybe change it so that thread count will be set as the current count of CPU cores
+	thread_count = SDL_GetNumLogicalCPUCores();
 	threads = (thrd_t*)SDL_calloc(thread_count, sizeof(thrd_t));
 	ranges = (update_range*)SDL_calloc(thread_count, sizeof(update_range));
 
