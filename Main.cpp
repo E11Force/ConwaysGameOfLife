@@ -1,5 +1,6 @@
 #define SDL_MAIN_USE_CALLBACKS 1
-#include "GoL.h"
+#include <SDL3/SDL_main.h>
+#include <GoL.h>
 
 #define FPS 24
 
@@ -55,7 +56,7 @@ SDL_AppResult SDL_AppIterate(void* appstate)
 
     const Uint64 after = SDL_GetTicks();
     static int frame_millis = 1000 / FPS;
-    int frame_diff = after - before;
+    Uint64 frame_diff = after - before;
     if (frame_diff < frame_millis) SDL_Delay(frame_millis - frame_diff);
 
     return SDL_APP_CONTINUE;
