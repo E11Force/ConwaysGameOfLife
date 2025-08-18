@@ -149,3 +149,28 @@ void RenderField(SDL_Renderer* renderer) {
 		}
 	}
 }
+
+#define PREVIEW_SCALING 2.f
+
+void RenderPreview(SDL_Renderer* renderer, const SDL_FPoint& pos) {
+	SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+	int renderer_width, renderer_height;
+	SDL_GetRenderOutputSize(renderer, &renderer_width, &renderer_height);
+	static float padding = 1.f;
+	static SDL_FRect inner_draw_buffer{ pos.x - padding, pos.y - padding, renderer_width / PREVIEW_SCALING + padding * 2, renderer_height / PREVIEW_SCALING + padding * 2};
+	static float border_size = 4.f;
+	static SDL_FRect frame_draw_buffer{ inner_draw_buffer.x - border_size, inner_draw_buffer.y - border_size, inner_draw_buffer.width + border_size * 2, inner_draw_buffer.height + border_size * 2};
+	SDL_RenderFillRect(renderer, &frame_draw_buffer);
+	SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+	
+	static int preview_cell_size = CELL_SIZE / PREVIEW_SCALING;
+	static SDL_FRect cell_draw_buffer{ pos.x, pos.y, preview_cell_size, preview_cell_size};
+	
+	for (int i = 0; i < size.height; i++) {
+		cell_draw_buffer.y = i * preview_cell_size;
+		for (int j = 0; j < size.width; j++) {
+			cell_draw_buffer.x = j * preview_cell_size;
+			if (field[i][j]) SDL_RenderFillRect(renderer, &cell_draw_buffer);
+		}
+	}
+}
