@@ -77,10 +77,10 @@ void ExitButtonEvt(void* app_state) {
 // MANAGING RESOURCES
 
 void LoadMenuResources(SDL_Renderer* renderer) {
-	buttons = (Button*)SDL_calloc((size_t)3, sizeof(Button));
 	button_count = 3;
-	labels = (Label*)SDL_calloc((size_t)2, sizeof(Label));
+	buttons = (Button*)SDL_calloc((size_t)button_count, sizeof(Button));
 	label_count = 2;
+	labels = (Label*)SDL_calloc((size_t)label_count, sizeof(Label));
 
 	int renderer_width, renderer_height;
 	SDL_GetRenderOutputSize(renderer, &renderer_width, &renderer_height);
@@ -105,6 +105,23 @@ void LoadMenuResources(SDL_Renderer* renderer) {
 
 	buttons_dstrect_buffer.y += buttons_dstrect_buffer.h + buttons_spacing;
 	InitButtonText(buttons[2], renderer, buttons_dstrect_buffer, "Exit", 30, &ExitButtonEvt, &global_app_state, 4, 10);
+}
+
+//////////////////////////////
+//		RULES STATE 
+//////////////////////////////
+
+// BUTTON EVENTS
+
+// MANAGING RESOURCES
+
+void LoadRulesResources(SDL_Renderer* renderer) {
+	button_count = 1;
+	buttons = (Button*)SDL_calloc((size_t)button_count, sizeof(Button));
+	label_count = 4;
+	labels = (Label*)SDL_calloc((size_t)label_count, sizeof(Label));
+	
+	
 }
 
 //////////////////////////////
