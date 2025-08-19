@@ -35,6 +35,21 @@ void InitAutomata(SDL_Renderer* renderer);
 
 void InitFieldFromBMPImage(const char* image);
 
+//////////////////////////////
+//		UI COMPONENTS
+//////////////////////////////
+
+struct view_config {
+	float scale = 1.f;
+	float cell_size = CELL_SIZE;
+	SDL_FPoint diff;
+	SDL_FRect showed_cells;
+};
+
+void UpdateViewRect(SDL_Renderer* renderer);
+
 void RenderField(SDL_Renderer* renderer);
 
-void RenderPreview(SDL_Renderer* renderer, const SDL_FPoint& pos);
+void MoveView(SDL_Renderer* renderer, float diff_x, float diff_y);
+
+void ChangeRenderScale(int diff_scale);
