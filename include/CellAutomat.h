@@ -52,4 +52,4 @@ void RenderField(SDL_Renderer* renderer);
 
 void MoveView(SDL_Renderer* renderer, float diff_x, float diff_y);
 
-void ChangeRenderScale(int diff_scale);
+void ChangeRenderScale(SDL_Renderer* renderer, float diff_scale);

@@ -158,3 +158,9 @@ void MoveView(SDL_Renderer* renderer, float diff_x, float diff_y) {
 		view.diff.y = fminf(view.diff.y + diff_y, rederer_height * (view.scale - 1));
 	UpdateViewRect(renderer);
 }
+
+void ChangeRenderScale(SDL_Renderer* renderer, float diff_scale) {
+	int rederer_width, renderer_height;
+	SDL_GetRenderOutputSize(renderer, &rederer_width, &renderer_height);
+	
+}
