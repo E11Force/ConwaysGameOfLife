@@ -130,3 +130,22 @@ void RenderButton(SDL_Renderer* renderer, const Button& button, SDL_FPoint& mous
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
 	SDL_RenderTexture(renderer, button.content, nullptr, &button.content_rect);
 }
+
+void InitSlider(Slider& slider, SDL_Renderer* renderer, SDL_FRect dstrect, SDL_FPoint show_value_pos, float show_value_size, float* change_value, unsigned char border_width) {
+	slider.dstrect = dstrect;
+	slider.show_value = (Label*)SDL_alloc(sizeof(Label));
+	InitLabelText(slider.show_value, renderer);
+	slider.change_value = change_value;
+}
+
+void DestroySlider(Slider* slider) {
+
+}
+
+void CheckSlider(Slider& slider, SDL_FPoint& mouse_pos, SDL_MouseButtonFlags& mouse_buttons) {
+
+}
+
+void RenderSlider(SDL_Renderer* renderer, Slider& slider) {
+
+}

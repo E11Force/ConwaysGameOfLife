@@ -36,7 +36,7 @@ void InitAutomata(SDL_Renderer* renderer);
 void InitFieldFromBMPImage(const char* image);
 
 //////////////////////////////
-//		UI COMPONENTS
+//		FIELD RENDER
 //////////////////////////////
 
 struct view_config {

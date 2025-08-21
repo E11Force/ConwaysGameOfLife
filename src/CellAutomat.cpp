@@ -123,12 +123,12 @@ void UpdateField() {
 static view_config view;
 
 void UpdateViewRect(SDL_Renderer* renderer) {
-	view.showed_cells.x = (int)(view.diff.x / view.cell_size);
-	view.showed_cells.y = (int)(view.diff.y / view.cell_size);
+	view.showed_cells.x = min((int)(view.diff.x / view.cell_size), size.width);
+	view.showed_cells.y = min((int)(view.diff.y / view.cell_size), size.height);
 	int rederer_width, renderer_height;
 	SDL_GetRenderOutputSize(renderer, &rederer_width, &renderer_height);
-	view.showed_cells.w = (int)(rederer_width / view.cell_size) + 1; // make rounding
-	view.showed_cells.h = (int)(rederer_height / view.cell_size) + 1;  // make rounding
+	view.showed_cells.w = min((int)(rederer_width / view.cell_size) + 1, size.width - (int)view.showed_cells.x);
+	view.showed_cells.h = min((int)(rederer_height / view.cell_size) + 1, size.height - (int)view.showed_cells.y);
 }
 
 void RenderField(SDL_Renderer* renderer) {
@@ -140,9 +140,9 @@ void RenderField(SDL_Renderer* renderer) {
 						 view.cell_size, 
 						 view.cell_size};
 
-	for (int i = view.showed_cells.y; i < size.height && i - view.showed_cells.y < view.showed_cells.h; i++) {
+	for (int i = view.showed_cells.y; i - view.showed_cells.y < view.showed_cells.h; i++) {
 		cell_draw_buffer.y = i * cell_draw_buffer.h;
-		for (int j = view.showed_cells.x; j < size.width && j - view.showed_cells.x < view.showed_cells.w; j++) {
+		for (int j = view.showed_cells.x; j - view.showed_cells.x < view.showed_cells.w; j++) {
 			cell_draw_buffer.x = j * cell_draw_buffer.w;
 			if (field[i][j]) SDL_RenderFillRect(renderer, &cell_draw_buffer);
 		}
@@ -163,4 +163,20 @@ void ChangeRenderScale(SDL_Renderer* renderer, float diff_scale) {
 	int rederer_width, renderer_height;
 	SDL_GetRenderOutputSize(renderer, &rederer_width, &renderer_height);
 	
+	float new_field_width = rederer_width * (view.scale + diff_scale);
+	float new_field_height = rederer_height * (view.scale + diff_scale);
+	float old_field_width = rederer_width * view.scale;
+	float old_field_height = rederer_height * view.scale;
+	
+	SDL_FPoint new_diff {fmaxf(view.diff.x + (new_field_width - old_field_width) / 2, 0.f), 
+						 fmaxf(view.diff.y + (new_field_height - old_field_height) / 2, 0.f)};
+	
+	if(new_diff.x + renderer_width > new_field_width) 
+		new_diff.x = fmaxf(new_diff.x - (new_diff.x + renderer_width - new_field_width), 0.f); 
+	if(new_diff.y + renderer_height > new_field_height) 
+		new_diff.y = fmaxf(new_diff.y - (new_diff.y + renderer_height - new_field_height), 0.f); 
+	view.diff = new_diff;
+	view.scale = fmaxf(view.scale + diff_scale, 1.f);
+	view.cell_size = CELL_SIZE * view.scale;
+	UpdateViewRect(renderer);
 }
