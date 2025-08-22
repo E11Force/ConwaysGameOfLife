@@ -132,20 +132,31 @@ void RenderButton(SDL_Renderer* renderer, const Button& button, SDL_FPoint& mous
 }
 
 void InitSlider(Slider& slider, SDL_Renderer* renderer, SDL_FRect dstrect, SDL_FPoint show_value_pos, float show_value_size, float* change_value, unsigned char border_width) {
-	slider.dstrect = dstrect;
 	slider.show_value = (Label*)SDL_alloc(sizeof(Label));
 	InitLabelText(slider.show_value, renderer);
 	slider.change_value = change_value;
+	slider.dstrect = dstrect;
+	slider.border_rect = { slider.dstrect.x - border_width,
+							slider.dstrect.y - border_width,
+							slider.dstrect.w + border_width * 2,
+							slider.dstrect.h + border_width * 2 };
 }
 
 void DestroySlider(Slider* slider) {
-
+	SDL_free(slider->show_value);
+	SDL_free(slider);
 }
 
 void CheckSlider(Slider& slider, SDL_FPoint& mouse_pos, SDL_MouseButtonFlags& mouse_buttons) {
-
+	
 }
 
 void RenderSlider(SDL_Renderer* renderer, Slider& slider) {
-
+	SDL_SetRenderDrawColor(255, 255, 255, SDL_ALPHA_OPAQUE);
+	SDL_RenderFillRect(renderer, &slider.border_rect);
+	SDL_SetRenderDrawColor(0, 0, 0, SDL_ALPHA_OPAQUE);
+	SDL_RenderFillRect(renderer, &slider.dstrect);
+	
+	float slider_position = slider.dstrect.x + slider.dstrect.w * (*slider.change_value / (slider.max_val + slider.min_val));
+	SDL_RenderLine(renderer, {slider_position, slider.dstrect.y}, {slider_position, slider.dstrect.y + slider.dstrect.h}, slider.dstrect.x - slider.border_rect.x);
 }
