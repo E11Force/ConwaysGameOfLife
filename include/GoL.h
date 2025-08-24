@@ -3,6 +3,7 @@
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
 
+#include <algorithm>
 #include <threads.h>
 #include <memory.h>
 #include <UIElements.h>

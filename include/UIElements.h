@@ -74,19 +74,20 @@ void RenderButton(SDL_Renderer* renderer, const Button& button, SDL_FPoint& mous
 //////////////////////////////
 
 struct Slider {
-	SDL_FRect SDL_FRect dstrect{ 0.f, 0.f, 0.f, 0.f };
+	SDL_FRect dstrect{ 0.f, 0.f, 0.f, 0.f };
 	SDL_FRect border_rect{ 0.f, 0.f, 0.f, 0.f };
+	float showed_value_size = 0.f;
 	float max_val = 0.f;
 	float min_val = 0.f;
 	float* change_val = nullptr;
 	Label* show_value = nullptr;
 	bool engaged = false;
-}
+};
 
 void InitSlider(Slider& slider, SDL_Renderer* renderer, SDL_FRect dstrect, SDL_FPoint show_value_pos, float show_value_size, float* change_value, unsigned char border_width);
 
 void DestroySlider(Slider* slider);
 
-void CheckSlider(Slider& slider, SDL_FPoint& mouse_pos, SDL_MouseButtonFlags& mouse_buttons);
+void CheckSlider(Slider& slider, SDL_FPoint* mouse_pos, SDL_MouseButtonFlags& mouse_buttons);
 
 void RenderSlider(SDL_Renderer* renderer, Slider& slider);

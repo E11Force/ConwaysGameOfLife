@@ -132,9 +132,13 @@ void RenderButton(SDL_Renderer* renderer, const Button& button, SDL_FPoint& mous
 }
 
 void InitSlider(Slider& slider, SDL_Renderer* renderer, SDL_FRect dstrect, SDL_FPoint show_value_pos, float show_value_size, float* change_value, unsigned char border_width) {
-	slider.show_value = (Label*)SDL_alloc(sizeof(Label));
-	InitLabelText(slider.show_value, renderer);
-	slider.change_value = change_value;
+	slider.show_value = (Label*)SDL_malloc(sizeof(Label));
+	char value_caption[100], decimal_part[100];
+	SDL_itoa((int)(*change_value), value_caption, 10);
+	SDL_itoa((int)(*change_value * 100) % 100, decimal_part, 10);
+	SDL_strlcat(value_caption, decimal_part, 100);
+	InitLabelText(*slider.show_value, renderer, value_caption, show_value_size, show_value_pos, NO_CENTERING);
+	slider.change_val = change_value;
 	slider.dstrect = dstrect;
 	slider.border_rect = { slider.dstrect.x - border_width,
 							slider.dstrect.y - border_width,
@@ -147,16 +151,36 @@ void DestroySlider(Slider* slider) {
 	SDL_free(slider);
 }
 
-void CheckSlider(Slider& slider, SDL_FPoint& mouse_pos, SDL_MouseButtonFlags& mouse_buttons) {
-	
+static void UpdateSliderShowedValue(Slider& slider, SDL_Renderer* renderer) { // maybe create separate thread for value updating
+	DestroyLabel(slider.show_value);
+	slider.show_value = (Label*)SDL_malloc(sizeof(Label));
+	char value_caption[100], decimal_part[100];
+	SDL_itoa((int)(*slider.change_val), value_caption, 10);
+	SDL_itoa((int)(*slider.change_val * 100) % 100, decimal_part, 10);
+	SDL_strlcat(value_caption, decimal_part, 100);
+	InitLabelText(*slider.show_value, renderer, value_caption, slider.showed_value_size, {slider.dstrect.x, slider.dstrect.y}, NO_CENTERING);
+}
+
+void CheckSlider(Slider& slider, SDL_FPoint* mouse_pos, SDL_MouseButtonFlags& mouse_buttons) {
+	if (!(mouse_buttons & SDL_BUTTON_LEFT)) {
+		slider.engaged = false;
+		return;
+	}
+	if (!slider.engaged && SDL_PointInRectFloat(mouse_pos, &slider.dstrect))
+		slider.engaged = true;
+	else if (slider.engaged) {
+		if (mouse_pos->x <= slider.dstrect.x) *slider.change_val = slider.min_val;
+		else if (mouse_pos->x >= slider.dstrect.x) *slider.change_val = slider.max_val;
+		else *slider.change_val = (slider.max_val - slider.min_val) * (mouse_pos->x - slider.dstrect.x) / slider.dstrect.w + slider.min_val;
+	}
 }
 
 void RenderSlider(SDL_Renderer* renderer, Slider& slider) {
-	SDL_SetRenderDrawColor(255, 255, 255, SDL_ALPHA_OPAQUE);
+	SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
 	SDL_RenderFillRect(renderer, &slider.border_rect);
-	SDL_SetRenderDrawColor(0, 0, 0, SDL_ALPHA_OPAQUE);
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 	SDL_RenderFillRect(renderer, &slider.dstrect);
 	
-	float slider_position = slider.dstrect.x + slider.dstrect.w * (*slider.change_value / (slider.max_val + slider.min_val));
-	SDL_RenderLine(renderer, {slider_position, slider.dstrect.y}, {slider_position, slider.dstrect.y + slider.dstrect.h}, slider.dstrect.x - slider.border_rect.x);
+	float slider_position = slider.dstrect.x + slider.dstrect.w * ((*slider.change_val - slider.min_val) / (slider.max_val - slider.min_val));
+	SDL_RenderLine(renderer, slider_position, slider.dstrect.y, slider_position, slider.dstrect.y + slider.dstrect.h);
 }

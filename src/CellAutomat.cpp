@@ -123,12 +123,12 @@ void UpdateField() {
 static view_config view;
 
 void UpdateViewRect(SDL_Renderer* renderer) {
-	view.showed_cells.x = min((int)(view.diff.x / view.cell_size), size.width);
-	view.showed_cells.y = min((int)(view.diff.y / view.cell_size), size.height);
-	int rederer_width, renderer_height;
-	SDL_GetRenderOutputSize(renderer, &rederer_width, &renderer_height);
-	view.showed_cells.w = min((int)(rederer_width / view.cell_size) + 1, size.width - (int)view.showed_cells.x);
-	view.showed_cells.h = min((int)(rederer_height / view.cell_size) + 1, size.height - (int)view.showed_cells.y);
+	view.showed_cells.x = std::min((int)(view.diff.x / view.cell_size), size.width);
+	view.showed_cells.y = std::min((int)(view.diff.y / view.cell_size), size.height);
+	int renderer_width, renderer_height;
+	SDL_GetRenderOutputSize(renderer, &renderer_width, &renderer_height);
+	view.showed_cells.w = std::min((int)(renderer_width / view.cell_size) + 1, size.width - (int)view.showed_cells.x);
+	view.showed_cells.h = std::min((int)(renderer_height / view.cell_size) + 1, size.height - (int)view.showed_cells.y);
 }
 
 void RenderField(SDL_Renderer* renderer) {
@@ -150,23 +150,23 @@ void RenderField(SDL_Renderer* renderer) {
 }
 
 void MoveView(SDL_Renderer* renderer, float diff_x, float diff_y) {
-	int rederer_width, renderer_height;
-	SDL_GetRenderOutputSize(renderer, &rederer_width, &renderer_height);
-	if(view.diff.x + diff_x + renderer_width < rederer_width * view.scale)
-		view.diff.x = fminf(view.diff.x + diff_x, rederer_width * (view.scale - 1));
-	if(view.diff.y + diff_y + renderer_height < rederer_height * view.scale)
-		view.diff.y = fminf(view.diff.y + diff_y, rederer_height * (view.scale - 1));
+	int renderer_width, renderer_height;
+	SDL_GetRenderOutputSize(renderer, &renderer_width, &renderer_height);
+	if(view.diff.x + diff_x + renderer_width < renderer_width * view.scale)
+		view.diff.x = fminf(view.diff.x + diff_x, renderer_width * (view.scale - 1));
+	if(view.diff.y + diff_y + renderer_height < renderer_height * view.scale)
+		view.diff.y = fminf(view.diff.y + diff_y, renderer_height * (view.scale - 1));
 	UpdateViewRect(renderer);
 }
 
 void ChangeRenderScale(SDL_Renderer* renderer, float diff_scale) {
-	int rederer_width, renderer_height;
-	SDL_GetRenderOutputSize(renderer, &rederer_width, &renderer_height);
+	int renderer_width, renderer_height;
+	SDL_GetRenderOutputSize(renderer, &renderer_width, &renderer_height);
 	
-	float new_field_width = rederer_width * (view.scale + diff_scale);
-	float new_field_height = rederer_height * (view.scale + diff_scale);
-	float old_field_width = rederer_width * view.scale;
-	float old_field_height = rederer_height * view.scale;
+	float new_field_width = renderer_width * (view.scale + diff_scale);
+	float new_field_height = renderer_height * (view.scale + diff_scale);
+	float old_field_width = renderer_width * view.scale;
+	float old_field_height = renderer_height * view.scale;
 	
 	SDL_FPoint new_diff {fmaxf(view.diff.x + (new_field_width - old_field_width) / 2, 0.f), 
 						 fmaxf(view.diff.y + (new_field_height - old_field_height) / 2, 0.f)};
